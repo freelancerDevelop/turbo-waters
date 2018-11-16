@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
 
         if (this.isLocalPlayer) {
             this.gameRunner.SetPlayer(this);
-            speedMultiplier = 2f;
+            //speedMultiplier = 2f;
         }
     }
 
