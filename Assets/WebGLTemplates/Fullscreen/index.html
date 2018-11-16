@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Unity WebGL Player | %UNITY_WEB_NAME%</title>
+        <style type="text/css">
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                position: relative;
+                width: 100%;
+                background: #eaeaf2;
+                overflow: hidden;
+                touch-action: none;
+            }
+
+            * {
+                box-sizing: border-box;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+            .icon-loading {
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+                font-size: 10px;
+                position: relative;
+                text-indent: -9999em;
+                border-top: 0.4em solid rgba(0, 0, 0, 0.4);
+                border-right: 0.4em solid rgba(0, 0, 0, 0.4);
+                border-bottom: 0.4em solid rgba(0, 0, 0, 0.4);
+                border-left: 0.4em solid #0b0b0b;
+                border-radius: 50%;
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+                animation: 1.1s linear infinite icon-loading;
+            }
+
+            @keyframes icon-loading {
+                0% { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
+                100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+            }
+
+            .canvas-container {
+                display: block;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                background: none !important;
+            }
+
+            .canvas-container .icon-loading {
+                position: absolute;
+                display: block;
+                width: 32px;
+                height: 32px;
+                top: 50%;
+                left: 50%;
+                margin: -16px 0 0 -16px;
+            }
+
+            .canvas-container canvas {
+                display: block;
+                margin: 0;
+                padding: 0;
+                transform-origin: top left;
+            }
+        </style>
+    </head>
+    <body>
+        <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+        <script>
+            var Game = function(opts) {
+                var self = this;
+
+                this.options = opts || {};
+
+                this.containerElem = null;
+                this.canvasElem = null;
+                this.loadingElem = null;
+
+                this.instance = null;
+                this.isLoaded = false;
+                this.isReady = false;
+                this.loadingProgress = 0;
+                this.resolutionScalingFactor = opts.resolutionScalingFactor || 2;
+
+                this.init = function() {
+                    this.containerElem = document.createElement('div');
+                    this.containerElem.classList.add('canvas-container');
+
+                    window.resolutionScalingFactor = this.resolutionScalingFactor;
+
+                    this.instance = UnityLoader.instantiate(this.containerElem, '%UNITY_WEBGL_BUILD_URL%', {
+                        onProgress: this.onLoadingProgress.bind(this),
+                        Module: {
+                            onRuntimeInitialized: this.onInstanceReady.bind(this)
+                        }
+                    });
+
+                    document.body.appendChild(this.containerElem);
+
+                    this.canvasElem = this.containerElem.querySelector('canvas');
+                    this.canvasElem.setAttribute('tabindex', '1');
+
+                    this.loadingElem = document.createElement('span');
+                    this.loadingElem.classList.add('icon-loading');
+
+                    this.containerElem.appendChild(this.loadingElem);
+
+                    window.onresize = this.onWindowResize.bind(this);
+                };
+
+                this.onLoadingProgress = function(instance, progress) {
+                    this.loadingProgress = progress;
+
+                    if (this.loadingProgress >= 1 && !this.isLoaded) {
+                        this.isLoaded = true;
+                    }
+                };
+
+                this.onInstanceReady = function() {
+                    this.isReady = true;
+                    this.loadingProgress = 1;
+
+                    this.loadingElem.remove();
+
+                    this.updateCanvasSize();
+                };
+
+                this.updateCanvasSize = function() {
+                    this.canvasElem.style.setProperty('width', (this.containerElem.clientWidth * this.resolutionScalingFactor) + 'px', 'important');
+                    this.canvasElem.style.setProperty('height', (this.containerElem.clientHeight * this.resolutionScalingFactor) + 'px', 'important');
+
+                    if (this.resolutionScalingFactor > 1) {
+                        this.canvasElem.style.setProperty('transform', 'scale(' + 1 / this.resolutionScalingFactor + ')', 'important');
+                    } else {
+                        this.canvasElem.style.setProperty('transform', 'none', 'important');
+                    }
+                };
+
+                this.onWindowResize = function() {
+                    this.updateCanvasSize();
+                };
+
+                return this;
+            };
+
+            var game = new Game({
+                options: true
+            });
+
+            game.init();
+        </script>
+    </body>
+</html>
