@@ -8,13 +8,11 @@ public class PlayerCollision : MonoBehaviour {
     //public Player player;
     private PlayerMover mover;
     private Player player;
-    private bool testBool = false;
 
     // Use this for initialization
     void Start() {
         mover = GetComponent<PlayerMover>();
         player = GetComponent<Player>();
-        textBool = true;
     }
 
     private void OnCollisionEnter(Collision collision) {
