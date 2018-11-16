@@ -45,7 +45,7 @@ public class Player : MonoBehaviour
     private float speedMultiplier = 1f;
 
     private float speedRemaining = 0;
-    private float scaleMultiplier = 1.35f;
+    private float scaleMultiplier = 2;//1.5f;
     private float scaleRemaining = 0;
     private float scaleSpeed = 0.2f;
 
@@ -69,6 +69,7 @@ public class Player : MonoBehaviour
 
         if (this.isLocalPlayer) {
             this.gameRunner.SetPlayer(this);
+            //speedMultiplier = 2f;
         }
     }
 
@@ -175,6 +176,12 @@ public class Player : MonoBehaviour
             return;
         }
 
+        // Compare scales of players
+        if (this.Type == PlayerType.Active && enemyPlayer.Type == PlayerType.Active && 
+            this.GetScale() >= enemyPlayer.GetScale()) {
+            return;
+        }
+
         this.deaths++;
         this.isDead = true;
         this.deathTimer = 5f;
@@ -199,6 +206,7 @@ public class Player : MonoBehaviour
         else if (this.gameObject.layer == LayerMask.NameToLayer("Edible")) {
             if (this.tag == "ClamEdible") {
                 // Decrease clam edibles
+                ClamSpawner.Instance.TotalClam--;
             }
         }
     }

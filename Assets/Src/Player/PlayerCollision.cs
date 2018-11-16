@@ -18,34 +18,55 @@ public class PlayerCollision : MonoBehaviour {
     private void OnCollisionEnter(Collision collision) {
 
         foreach (ContactPoint c in collision.contacts) {
+            // Ensure it's not colliding with itself
+            if (c.otherCollider.gameObject.transform.root.gameObject == this.transform.root.gameObject) {
+                return;
+            }
 
-            // Check if other player/AI
-            //if (c.thisCollider.gameObject.transform.root.tag == "Player") {
-            //    Logger.Message("Collided w/ a player");
-            //    return;
-            //}
+            // Check if colliding with other player object
+            if (c.otherCollider.gameObject.transform.root.GetComponent<Player>() != null) {
+                Player otherPlayer = c.otherCollider.gameObject.transform.root.GetComponent<Player>();
 
-            // Do logic if mouth touches object, and player is an Active type
-            if (c.thisCollider.gameObject.transform.root.GetComponent<Player>().Type == PlayerType.Active
-            //&& c.otherCollider.GetComponent<FishBot>() != null) {
-            && c.otherCollider.GetComponent<CreatureCollision>() != null) {
-                // Return if object is dead already
-                if (c.otherCollider.gameObject.GetComponent<Player>().isDead) {
-                    return;
+                // Check if colliding with an Active player
+                if (player.Type == PlayerType.Active
+                && otherPlayer.Type == PlayerType.Active) {
+                    // Return if other player is dead already
+                    if (otherPlayer.isDead) {
+                        return;
+                    }
+                    // Attack
+                    player.AttackedBy(c.otherCollider.gameObject.transform.root.GetComponent<Player>());
                 }
 
-                // Eat object
-                GetComponent<PlayerMover>().ReachedSwimTarget(c.otherCollider.gameObject);
+
+                // Check if colliding with a Passive player
+                if (player.Type == PlayerType.Active
+                && c.otherCollider.GetComponent<CreatureCollision>() != null) {
+                    // Return if object is dead already
+                    if (c.otherCollider.gameObject.GetComponent<Player>().isDead) {
+                        return;
+                    }
+
+                    // Eat object
+                    GetComponent<PlayerMover>().ReachedSwimTarget(c.otherCollider.gameObject);
+                }
             }
+
+
+
         }
     }
 
     private void OnTriggerEnter(Collider other) {
+
         // Check if object is an obstacle
         if (other.gameObject.tag == "Obstacle") {
             // Call obstacle destruction method
             other.gameObject.GetComponent<Obstacle>().Destruct();
-        } else if (other.gameObject.tag == "ScoreBlock") {
+        }
+
+        // Check if object is a ScoreBlock
+        if (other.gameObject.tag == "ScoreBlock") {
             // Add points to player
             player.AddPoints(5);
         }

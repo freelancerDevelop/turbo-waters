@@ -26,11 +26,6 @@ public class VanillaRunner : GameModeRunner, ITimedMode
     protected int selectedZoneIndex = 0;
     protected List<Vector3> spawnZones = new List<Vector3>();
 
-    //private FishSpawner fishSpawner;
-    //private ClamSpawner clamSpawner;
-    //private ObstacleSpawner obstacleSpawner;
-    //private EnemySpawner enemySpawner;
-
     public List<Player> players = new List<Player>();
     protected Dictionary<uint, VanillaPlayerStats> allPlayerStats = new Dictionary<uint, VanillaPlayerStats>();
 
@@ -156,8 +151,6 @@ public class VanillaRunner : GameModeRunner, ITimedMode
 
     public void OnPlayerPointsUpdated(PlayerPointsUpdatedEvent e)
     {
-        Logger.Message("[VanillaRunner] Player points updated event called for id: " + e.player.id);
-
         if (this.allPlayerStats.ContainsKey(e.player.id)) {
             this.allPlayerStats[e.player.id].name = e.player.name;
             this.allPlayerStats[e.player.id].points = e.points;
