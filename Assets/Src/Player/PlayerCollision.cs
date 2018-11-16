@@ -20,10 +20,10 @@ public class PlayerCollision : MonoBehaviour {
         foreach (ContactPoint c in collision.contacts) {
 
             // Check if other player/AI
-            if (c.thisCollider.gameObject.transform.root.tag == "Player") {
-                Logger.Message("Collided w/ a player");
-                return;
-            }
+            //if (c.thisCollider.gameObject.transform.root.tag == "Player") {
+            //    Logger.Message("Collided w/ a player");
+            //    return;
+            //}
 
             // Do logic if mouth touches object, and player is an Active type
             if (c.thisCollider.gameObject.transform.root.GetComponent<Player>().Type == PlayerType.Active
